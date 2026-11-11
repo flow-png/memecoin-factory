@@ -1,260 +1,78 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MemeCoin Factory Launcher</title>
+    <title>BaseMeme - Launch Your Meme Coin in 1 Minute</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #0b0f19;
-            color: #f3f4f6;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-        .glow-purple {
-            box-shadow: 0 0 25px rgba(168, 85, 247, 0.25);
-        }
-        .glow-cyan {
-            box-shadow: 0 0 25px rgba(6, 182, 212, 0.25);
-        }
-        .bg-glass {
-            background: rgba(17, 24, 39, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .bg-glass-card {
-            background: rgba(31, 41, 55, 0.5);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #a855f7 0%, #06b6d4 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .gradient-btn {
-            background: linear-gradient(135deg, #9333ea 0%, #0891b2 100%);
-        }
-        .gradient-btn:hover {
-            background: linear-gradient(135deg, #7e22ce 0%, #0e7490 100%);
-        }
-    </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-purple-500 selection:text-white">
-
-    <!-- Header Navigation -->
-    <header class="sticky top-0 z-50 bg-glass border-b border-gray-800 px-4 py-3 sm:px-8">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl gradient-btn flex items-center justify-center font-black text-xl text-white shadow-lg shadow-purple-500/20">
-                    🚀
-                </div>
-                <span class="font-extrabold text-xl tracking-tight gradient-text">MemeFactory</span>
-            </div>
-            
-            <button id="connectWalletBtn" onclick="toggleWallet()" class="gradient-btn text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all duration-200 transform active:scale-95 flex items-center space-x-2 shadow-md hover:shadow-purple-500/20">
-                <i class="fa-solid fa-wallet"></i>
-                <span id="walletText">Connect Wallet</span>
-            </button>
+<body class="bg-slate-950 text-white min-h-screen flex flex-col justify-between selection:bg-purple-500 selection:text-white">
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50 px-4 py-3 flex justify-between items-center max-w-4xl mx-auto w-full">
+        <div class="flex items-center space-x-2">
+            <span class="text-2xl">⚡</span>
+            <span class="font-bold text-lg bg-gradient-to-r from-blue-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">BaseMeme</span>
         </div>
+        <button id="connectBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium px-4 py-2 rounded-xl text-sm transition shadow-lg shadow-purple-500/20">
+            Connect Wallet
+        </button>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-4xl mx-auto w-full px-4 py-8 flex-grow">
-        
-        <!-- Hero Section -->
-        <div class="text-center mb-10 space-y-3">
-            <h1 class="text-3xl sm:text-5xl font-black tracking-tight">
-                Создай свой <span class="gradient-text">Мемкоин</span> за 1 минуту
+    <main class="max-w-xl mx-auto px-4 py-8 w-full flex-grow">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">
+                Launch Your <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">Meme Coin</span> in 1 Minute
             </h1>
-            <p class="text-gray-400 text-sm sm:text-base max-w-xl mx-auto">
-                Запусти собственный ERC-20 токен в сети Base без знания кода. Безопасно, быстро и с низкой комиссией.
+            <p class="text-slate-400 text-sm">
+                Deploy your own ERC-20 token on Base network with zero code. Safe, instant, and ultra-low fees.
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-            
-            <!-- Launch Form -->
-            <div class="md:col-span-7 bg-glass rounded-3xl p-6 sm:p-8 glow-purple">
-                <div class="flex items-center justify-between mb-6 border-b border-gray-800 pb-4">
-                    <h2 class="text-lg font-bold flex items-center space-x-2">
-                        <i class="fa-solid fa-wand-magic-sparkles text-purple-400"></i>
-                        <span>Параметры монеты</span>
-                    </h2>
-                    <span class="text-xs bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-full border border-purple-500/20">Fee: 0.00 ETH</span>
-                </div>
-
-                <form id="tokenForm" onsubmit="handleCreateToken(event)" class="space-y-5">
-                    <!-- Token Name -->
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Название токена</label>
-                        <div class="relative">
-                            <input type="text" id="tokenName" required placeholder="например: Super Meme" oninput="updatePreview()"
-                                class="w-full bg-gray-900/80 border border-gray-700/80 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-all">
-                        </div>
-                    </div>
-
-                    <!-- Token Symbol -->
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Тикер (Символ)</label>
-                        <div class="relative">
-                            <input type="text" id="tokenSymbol" required placeholder="например: MEME" maxlength="10" oninput="updatePreview()"
-                                class="w-full bg-gray-900/80 border border-gray-700/80 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 outline-none uppercase transition-all">
-                        </div>
-                    </div>
-
-                    <!-- Initial Supply -->
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Общая эмиссия (Supply)</label>
-                        <div class="relative">
-                            <input type="number" id="tokenSupply" required min="1" placeholder="например: 1000000" oninput="updatePreview()"
-                                class="w-full bg-gray-900/80 border border-gray-700/80 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-all">
-                        </div>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <button type="submit" id="submitBtn" class="w-full gradient-btn text-white font-bold py-4 rounded-xl text-base shadow-lg shadow-purple-500/25 transition-all duration-200 transform active:scale-98 flex items-center justify-center space-x-2 mt-4">
-                        <i class="fa-solid fa-rocket"></i>
-                        <span id="btnText">Создать Токен</span>
-                    </button>
-                </form>
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl backdrop-blur">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-xs font-semibold uppercase tracking-wider text-purple-400 flex items-center gap-1">✨ Token Parameters</span>
+                <span id="feeBadge" class="text-xs bg-slate-800 border border-slate-700 text-slate-300 px-2.5 py-1 rounded-lg">Fee: 0.00 ETH</span>
             </div>
 
-            <!-- Preview Card -->
-            <div class="md:col-span-5 space-y-6">
-                <div class="bg-glass rounded-3xl p-6 glow-cyan">
-                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 flex items-center justify-between">
-                        <span>Превью карточки</span>
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    </h3>
-                    
-                    <div class="bg-glass-card rounded-2xl p-5 border border-gray-700/50 space-y-4">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-14 h-14 rounded-2xl gradient-btn flex items-center justify-center text-2xl font-black shadow-md flex-shrink-0" id="previewIcon">
-                                🪙
-                            </div>
-                            <div class="overflow-hidden">
-                                <h4 class="font-bold text-lg truncate" id="prevName">SuperMeme</h4>
-                                <span class="inline-block bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs px-2 py-0.5 rounded font-mono font-bold uppercase" id="prevSymbol">$MEME</span>
-                            </div>
-                        </div>
-
-                        <div class="pt-3 border-t border-gray-800 grid grid-cols-2 gap-2 text-xs">
-                            <div>
-                                <span class="text-gray-500 block">Тип контракта</span>
-                                <span class="font-semibold text-gray-300">ERC-20 Standard</span>
-                            </div>
-                            <div>
-                                <span class="text-gray-500 block">Эмиссия</span>
-                                <span class="font-semibold text-gray-300 truncate block" id="prevSupply">1,000,000</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 p-3 bg-purple-950/40 border border-purple-500/20 rounded-xl text-xs text-purple-300 flex items-start space-x-2">
-                        <i class="fa-solid fa-circle-info mt-0.5 text-purple-400"></i>
-                        <span>Все созданные монеты сразу зачисляются на кошелёк создателя в полном объёме.</span>
-                    </div>
+            <form id="tokenForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 uppercase mb-1.5">Token Name</label>
+                    <input type="text" id="tokenName" required placeholder="e.g. Super Meme" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 transition">
                 </div>
-
-                <!-- Status Console -->
-                <div id="statusConsole" class="hidden bg-gray-900 border border-gray-800 rounded-2xl p-4 font-mono text-xs text-gray-300 space-y-1">
-                    <div class="text-purple-400 font-bold mb-1">LOGS:</div>
-                    <div id="logContent" class="space-y-1"></div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 uppercase mb-1.5">Ticker (Symbol)</label>
+                    <input type="text" id="tokenSymbol" required placeholder="e.g. MEME" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 transition">
                 </div>
-            </div>
-
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 uppercase mb-1.5">Total Supply</label>
+                    <input type="number" id="tokenSupply" required placeholder="e.g. 1000000000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 transition">
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold py-3 rounded-xl text-sm transition shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2">
+                    <span>🚀</span> Create Token
+                </button>
+            </form>
         </div>
-
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-gray-800 py-6 text-center text-xs text-gray-500 px-4">
-        <p>© 2026 MemeCoin Factory. Built on Base Testnet.</p>
+    <footer class="text-center py-6 text-xs text-slate-600 border-t border-slate-900">
+        © 2026 BaseMeme. Powered by Base Network.
     </footer>
 
     <script>
+        const connectBtn = document.getElementById('connectBtn');
         let isConnected = false;
-
-        function toggleWallet() {
-            const btnText = document.getElementById('walletText');
-            const btn = document.getElementById('connectWalletBtn');
-            
-            if (!isConnected) {
-                isConnected = true;
-                btnText.innerText = '0x5B3...ddC4';
-                btn.classList.remove('gradient-btn');
-                btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
-                addLog('Wallet connected: 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4');
-            } else {
-                isConnected = false;
-                btnText.innerText = 'Connect Wallet';
-                btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
-                btn.classList.add('gradient-btn');
-                addLog('Wallet disconnected');
-            }
-        }
-
-        function updatePreview() {
-            const name = document.getElementById('tokenName').value || 'SuperMeme';
-            const symbol = document.getElementById('tokenSymbol').value || 'MEME';
-            const supply = document.getElementById('tokenSupply').value;
-
-            document.getElementById('prevName').innerText = name;
-            document.getElementById('prevSymbol').innerText = '$' + symbol.toUpperCase();
-            document.getElementById('prevSupply').innerText = supply ? Number(supply).toLocaleString('ru-RU') : '1,000,000';
-            document.getElementById('previewIcon').innerText = symbol ? symbol.charAt(0).toUpperCase() : '🪙';
-        }
-
-        function addLog(text) {
-            const consoleBox = document.getElementById('statusConsole');
-            const logContent = document.getElementById('logContent');
-            consoleBox.classList.remove('hidden');
-            
-            const time = new Date().toLocaleTimeString();
-            const logEntry = document.createElement('div');
-            logEntry.innerHTML = `<span class="text-gray-500">[${time}]</span> ${text}`;
-            logContent.appendChild(logEntry);
-        }
-
-        function handleCreateToken(e) {
+        connectBtn.addEventListener('click', () => {
+            isConnected = !isConnected;
+            connectBtn.textContent = isConnected ? '0x71...3A9f' : 'Connect Wallet';
+            connectBtn.classList.toggle('bg-emerald-600', isConnected);
+        });
+        document.getElementById('tokenForm').addEventListener('submit', (e) => {
             e.preventDefault();
-
             if (!isConnected) {
-                alert('Сначала подключи кошелек через кнопку Connect Wallet!');
+                alert('Please connect your wallet first!');
                 return;
             }
-
-            const name = document.getElementById('tokenName').value;
-            const symbol = document.getElementById('tokenSymbol').value.toUpperCase();
-            const supply = document.getElementById('tokenSupply').value;
-
-            const submitBtn = document.getElementById('submitBtn');
-            const btnText = document.getElementById('btnText');
-
-            // Simulate loading state
-            submitBtn.disabled = true;
-            submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
-            btnText.innerText = 'Отправка транзакции...';
-
-            addLog(`Initiating token creation: ${name} (${symbol})`);
-
-            setTimeout(() => {
-                btnText.innerText = 'Ожидание подтверждения...';
-                addLog(`Calling MemeFactory.createToken("${name}", "${symbol}", ${supply})...`);
-            }, 1200);
-
-            setTimeout(() => {
-                btnText.innerText = 'Создать Токен';
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-
-                addLog(`<span class="text-emerald-400 font-bold">SUCCESS!</span> Token contract created at 0x829...dece`);
-                alert(`🎉 Токен ${name} (${symbol}) успешно создан!\n\nЭмиссия ${Number(supply).toLocaleString('ru-RU')} монет зачислена на твой кошелек.`);
-            }, 3000);
-        }
+            alert('Success! Token deployment simulation initiated on Base network.');
+        });
     </script>
 </body>
 </html>
