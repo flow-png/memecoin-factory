@@ -21,11 +21,12 @@
     <input id="symbol" maxlength="12" placeholder="Ticker (e.g. DOGE)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3" required>
     <input id="supply" type="number" min="1" max="1000000000000" step="1" placeholder="Total Supply" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3" required>
     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-semibold">🚀 Create Token</button>
+    <p class="text-xs text-slate-500">By creating a token you agree to our <a href="/terms.html" class="underline">Terms of Use</a>.</p>
     <div id="result" class="text-sm break-all hidden"></div>
   </form>
   <p class="text-xs text-slate-500 text-center mt-6">Meme coins are highly risky. The smart contract is unaudited. Use at your own risk. This is not financial advice.</p>
 </main>
-<footer class="text-center text-xs text-slate-600 p-4">© 2026 BaseMeme. Network: <span id="netName"></span></footer>
+<footer class="text-center text-xs text-slate-600 p-4">© 2026 BaseMeme. Network: <span id="netName"></span> · <a href="/terms.html" class="underline">Terms</a> · <a href="/privacy.html" class="underline">Privacy</a></footer>
 
 <div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
   <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-sm space-y-3">
