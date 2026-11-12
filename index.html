@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BaseMeme Launchpad</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Ethers.js v5.7.2 -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
 
-    <!-- Header -->
     <header class="p-4 flex justify-between items-center border-b border-slate-800">
         <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
             BaseMeme Launchpad
@@ -21,7 +18,6 @@
         </button>
     </header>
 
-    <!-- Main Content -->
     <main class="flex-1 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md shadow-xl">
             <h2 class="text-lg font-semibold mb-4 text-center">Deploy Your Meme Token</h2>
@@ -46,15 +42,12 @@
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="py-4 text-center text-xs text-slate-500 border-t border-slate-900">
         Base Sepolia Testnet (<span id="wallet-status">Not Connected</span>)
     </footer>
 
-    <!-- Scripting -->
     <script>
         const contractAddress = '0x7fcf3673f721c537AE7104a6FF622B3359Cf34C5';
-
         let provider = null;
         let signer = null;
 
@@ -66,9 +59,34 @@
                 try {
                     provider = new ethers.providers.Web3Provider(window.ethereum);
                     await provider.send("eth_requestAccounts", []);
-
                     signer = provider.getSigner();
                     const address = await signer.getAddress();
-                    
                     connectBtn.textContent = address.substring(0, 6) + '...' + address.substring(38);
-                    walletStatus.textContent
+                    walletStatus.textContent = 'Connected: ' + address.substring(0, 6) + '...';
+                } catch (err) {
+                    console.error(err);
+                    alert("Connection failed: " + err.message);
+                }
+            } else {
+                alert("No crypto wallet found!");
+            }
+        });
+
+        document.getElementById('deploy-btn').addEventListener('click', async () => {
+            if (!signer) {
+                alert("Connect wallet first!");
+                return;
+            }
+            const name = document.getElementById('token-name').value;
+            const symbol = document.getElementById('token-symbol').value;
+            const supply = document.getElementById('token-supply').value;
+
+            if (!name || !symbol || !supply) {
+                alert("Fill in all fields!");
+                return;
+            }
+            alert("Кошелек подключен! Контракт: " + contractAddress);
+        });
+    </script>
+</body>
+</html>
