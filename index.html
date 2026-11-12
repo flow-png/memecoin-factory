@@ -4,142 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BaseMeme Launchpad</title>
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Подключаем Ethers.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <!-- Подключаем Reown (WalletConnect) Web3Modal / AppKit -->
-    <script src="https://unpkg.com/@web3modal/ethers@4.1.1/dist/index.umd.js"></script>
+    <!-- Ethers.js v5.7.2 -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <!-- Reown AppKit Ethers UMD Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/@reown/appkit-ethers@latest/dist/umd/index.js"></script>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col justify-between">
-    <header class="border-b border-gray-800 p-4 flex justify-between items-center max-w-4xl mx-auto w-full">
-        <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">BaseMeme Launchpad</h1>
-        <button id="connectWallet" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg font-medium transition">Connect Wallet</button>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="p-4 flex justify-between items-center border-b border-slate-800">
+        <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+            BaseMeme Launchpad
+        </h1>
+        <button id="connect-btn" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-xl font-medium transition">
+            Connect Wallet
+        </button>
     </header>
 
-    <main class="max-w-md mx-auto w-full p-6 bg-gray-900 border border-gray-800 rounded-2xl shadow-xl my-auto">
-        <h2 class="text-lg font-semibold mb-4 text-center">Deploy Your Meme Token</h2>
-        <form id="deployForm" class="space-y-4">
-            <div>
-                <label class="block text-sm text-gray-400 mb-1">Token Name</label>
-                <input type="text" id="tokenName" placeholder="e.g. DogeCoin" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500" required>
+    <!-- Main Content -->
+    <main class="flex-1 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md shadow-xl">
+            <h2 class="text-lg font-semibold mb-4 text-center">Deploy Your Meme Token</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Token Name</label>
+                    <input type="text" id="token-name" placeholder="My Meme" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Token Symbol</label>
+                    <input type="text" id="token-symbol" placeholder="MEME" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Total Supply</label>
+                    <input type="number" id="token-supply" placeholder="1000000" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <button id="deploy-btn" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-semibold transition mt-2">
+                    Deploy Token
+                </button>
             </div>
-            <div>
-                <label class="block text-sm text-gray-400 mb-1">Token Symbol</label>
-                <input type="text" id="tokenSymbol" placeholder="e.g. DOGE" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500" required>
-            </div>
-            <div>
-                <label class="block text-sm text-gray-400 mb-1">Total Supply</label>
-                <input type="number" id="tokenSupply" placeholder="1000000" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500" required>
-            </div>
-            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 py-2.5 rounded-lg font-semibold transition">Deploy Token</button>
-        </form>
-        <div id="result" class="mt-4 text-sm text-center hidden break-all"></div>
+        </div>
     </main>
 
-    <footer class="text-center text-xs text-gray-600 p-4 border-t border-gray-900">
+    <!-- Footer -->
+    <footer class="py-4 text-center text-xs text-slate-500 border-t border-slate-900">
         Base Sepolia Testnet
     </footer>
 
+    <!-- Script Initialization -->
     <script>
-        // Твой адрес контракта фабрики и Project ID уже прописаны!
-        const FACTORY_ADDRESS = "0x7fcf3673f721c537AE7104a6FF622B3359Cf34C5"; 
-        const PROJECT_ID = "444a1d8663dd680723135d875aac4173";
+        const projectId = '444a1d8663dd680723135d875aac4173';
+        const contractAddress = '0x7fcf3673f721c537AE7104a6FF622B3359Cf34C5';
 
-        const FACTORY_ABI = [
-            "function fee() view returns (uint256)",
-            "function createToken(string memory name, string memory symbol, uint256 supply) payable returns (address)",
-            "event TokenCreated(address indexed creator, address token, string name, string symbol, uint256 supply)"
-        ];
+        let modal = null;
 
-        let modal, provider, signer;
-
-        const baseSepolia = {
-            chainId: 84532,
-            name: 'Base Sepolia',
-            currency: 'ETH',
-            explorerUrl: 'https://sepolia.basescan.org',
-            rpcUrl: 'https://sepolia.base.org'
-        };
-
-        // Инициализация Web3Modal (Reown)
-        if (window['@web3modal/ethers']) {
-            const { createWeb3Modal, defaultConfig } = window['@web3modal/ethers'];
-            modal = createWeb3Modal({
-                ethersConfig: defaultConfig({ metadata: { name: 'BaseMeme', description: 'Meme Token Launchpad', url: window.location.origin, icons: [] } }),
-                chains: [baseSepolia],
-                projectId: PROJECT_ID,
-                enableAnalytics: false
-            });
-        }
-
-        const resultEl = document.getElementById('result');
-        function show(msg) {
-            resultEl.textContent = msg;
-            resultEl.classList.remove('hidden');
-        }
-
-        document.getElementById('connectWallet').onclick = async () => {
-            if (modal) {
-                await modal.open();
-            } else {
-                alert("WalletConnect SDK failed to load.");
-            }
-        };
-
-        // Слушаем события подключения через Reown
-        if (modal) {
-            modal.subscribeProvider(async ({ provider: extProvider, address, chainId, isConnected }) => {
-                if (isConnected && extProvider) {
-                    provider = new ethers.providers.Web3Provider(extProvider);
-                    signer = provider.getSigner();
-                    
-                    if (address) {
-                        document.getElementById('connectWallet').innerText = address.substring(0, 6) + "..." + address.substring(38);
-                    }
-
-                    // Подтягиваем комиссию контракта при подключении
-                    if (FACTORY_ADDRESS && FACTORY_ADDRESS.startsWith("0x")) {
-                        try {
-                            const f = await new ethers.Contract(FACTORY_ADDRESS, FACTORY_ABI, provider).fee();
-                            document.querySelector('#deployForm button').textContent = "Deploy Token (fee " + ethers.utils.formatEther(f) + " ETH)";
-                        } catch (e) { console.error(e); }
-                    }
-                }
-            });
-        }
-
-        document.getElementById('deployForm').onsubmit = async (e) => {
-            e.preventDefault();
-            if (!signer) { alert("Connect wallet first!"); return; }
-            const name = document.getElementById('tokenName').value.trim();
-            const symbol = document.getElementById('tokenSymbol').value.trim();
-            const supply = document.getElementById('tokenSupply').value;
-
-            if (!FACTORY_ADDRESS || !FACTORY_ADDRESS.startsWith("0x")) {
-                show("Error: Set your deployed factory contract address in the code first!");
-                return;
-            }
-
+        window.addEventListener('DOMContentLoaded', () => {
             try {
-                show("Fetching fee & sending transaction...");
-                const factory = new ethers.Contract(FACTORY_ADDRESS, FACTORY_ABI, signer);
-                const fee = await factory.fee();
-                
-                const tx = await factory.createToken(name, symbol, supply, { value: fee });
-                show("Transaction sent: " + tx.hash + ". Waiting for confirmation...");
-                
-                const receipt = await tx.wait();
-                const ev = receipt.events.find(x => x.event === "TokenCreated");
-                if (ev) {
-                    show("Success! Created token address: " + ev.args.token);
-                } else {
-                    show("Success! Transaction confirmed.");
+                // Инициализация Reown AppKit
+                if (window.AppKitEthers) {
+                    modal = window.AppKitEthers.createAppKit({
+                        projectId: projectId,
+                        networks: [{
+                            chainId: 84532,
+                            name: 'Base Sepolia',
+                            currency: 'ETH',
+                            explorerUrl: 'https://sepolia.basescan.org',
+                            rpcUrl: 'https://sepolia.base.org'
+                        }],
+                        metadata: {
+                            name: 'BaseMeme Launchpad',
+                            description: 'Deploy meme tokens on Base',
+                            url: 'https://basememe.pro',
+                            icons: ['https://avatars.githubusercontent.com/u/37784886']
+                        }
+                    });
                 }
             } catch (err) {
-                console.error(err);
-                show("Error: " + (err.reason || err.message));
+                console.error("WalletConnect Init Error:", err);
             }
-        };
+
+            const connectBtn = document.getElementById('connect-btn');
+            if (connectBtn) {
+                connectBtn.addEventListener('click', async () => {
+                    if (modal) {
+                        await modal.open();
+                    } else {
+                        alert("WalletConnect SDK failed to load.");
+                    }
+                });
+            }
+
+            const deployBtn = document.getElementById('deploy-btn');
+            if (deployBtn) {
+                deployBtn.addEventListener('click', () => {
+                    if (!modal || !modal.getIsConnected()) {
+                        alert("Connect wallet first!");
+                        return;
+                    }
+                    alert("Ready to deploy!");
+                });
+            }
+        });
     </script>
 </body>
 </html>
