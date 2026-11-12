@@ -1,115 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaseMeme Launchpad</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Ethers.js v5.7.2 -->
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BaseMeme - Launch Your Meme Coin in 1 Minute</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
+<body class="bg-slate-950 text-white min-h-screen">
+<header class="border-b border-slate-800 p-4 flex justify-between items-center max-w-xl mx-auto">
+  <span class="font-bold text-lg">⚡ BaseMeme</span>
+  <button id="connectBtn" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg">Connect Wallet</button>
+</header>
+<main class="max-w-xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-center mb-2">Launch Your Meme Coin in 1 Minute</h1>
+  <p class="text-center text-slate-400 mb-8">Deploy your own ERC-20 token on Base. Low fees, no coding.</p>
+  <form id="form" class="space-y-4 bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <div class="text-sm text-slate-400">Fee: <span id="fee">...</span> ETH</div>
+    <input id="name" maxlength="64" placeholder="Token Name" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3" required>
+    <input id="symbol" maxlength="12" placeholder="Ticker (e.g. DOGE)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3" required>
+    <input id="supply" type="number" min="1" max="1000000000000" step="1" placeholder="Total Supply" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3" required>
+    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-semibold">🚀 Create Token</button>
+    <p class="text-xs text-slate-500">By creating a token you agree to our <a href="/terms.html" class="underline">Terms of Use</a>.</p>
+    <div id="result" class="text-sm break-all hidden"></div>
+  </form>
+  <p class="text-xs text-slate-500 text-center mt-6">Meme coins are highly risky. The smart contract is unaudited. Use at your own risk. This is not financial advice.</p>
+</main>
+<footer class="text-center text-xs text-slate-600 p-4">© 2026 BaseMeme. Network: <span id="netName"></span> · <a href="/terms.html" class="underline">Terms</a> · <a href="/privacy.html" class="underline">Privacy</a></footer>
 
-    <!-- Header -->
-    <header class="p-4 flex justify-between items-center border-b border-slate-800">
-        <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
-            BaseMeme Launchpad
-        </h1>
-        <button id="connect-btn" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-xl font-medium transition">
-            Connect Wallet
-        </button>
-    </header>
+<div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+  <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-sm space-y-3">
+    <div class="flex justify-between items-center">
+      <h2 class="font-semibold">Connect a wallet</h2>
+      <button id="closeModal" class="text-slate-400 text-xl">✕</button>
+    </div>
+    <button id="browserWallet" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg">Browser wallet</button>
+    <a id="openMM" class="block text-center w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-lg">Open in MetaMask</a>
+    <a id="openCB" class="block text-center w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-lg">Open in Coinbase Wallet</a>
+    <a id="openTW" class="block text-center w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-lg">Open in Trust Wallet</a>
+    <p class="text-xs text-slate-500">On phone, use an "Open in" button. On computer, use the browser wallet button.</p>
+  </div>
+</div>
 
-    <!-- Main Content -->
-    <main class="flex-1 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md shadow-xl">
-            <h2 class="text-lg font-semibold mb-4 text-center">Deploy Your Meme Token</h2>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm text-slate-400 mb-1">Token Name</label>
-                    <input type="text" id="token-name" placeholder="My Meme" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm text-slate-400 mb-1">Token Symbol</label>
-                    <input type="text" id="token-symbol" placeholder="MEME" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm text-slate-400 mb-1">Total Supply</label>
-                    <input type="number" id="token-supply" placeholder="1000000" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500">
-                </div>
-                <button id="deploy-btn" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-semibold transition mt-2">
-                    Deploy Token
-                </button>
-            </div>
-        </div>
-    </main>
+<script>
+const FACTORY_ADDRESS = "0xb87D12053646B5D930FCc6033F2dea7378bbFbA4";
+const NETWORK = {
+  chainId: 84532,
+  hex: "0x14a34",
+  name: "Base Sepolia",
+  rpc: "https://sepolia.base.org",
+  explorer: "https://sepolia.basescan.org"
+};
+const TAWK_URL = "https://embed.tawk.to/6af5ab6ac23cfc3c412a12a6/1k77qb6hm";
 
-    <!-- Footer -->
-    <footer class="py-4 text-center text-xs text-slate-500 border-t border-slate-900">
-        Base Sepolia Testnet (<span id="wallet-status">Not Connected</span>)
-    </footer>
+const ABI = [
+  "function fee() view returns (uint256)",
+  "function createToken(string name, string symbol, uint256 supply) payable returns (address)",
+  "event TokenCreated(address indexed creator, address token, string name, string symbol, uint256 supply)"
+];
 
-    <!-- Scripting -->
-    <script>
-        const contractAddress = '0x7fcf3673f721c537AE7104a6FF622B3359Cf34C5';
-        const contractABI = [
-            "function deployToken(string memory name, string memory symbol, uint256 supply) public payable"
-        ];
+const $ = id => document.getElementById(id);
+let provider, signer;
 
-        let provider = null;
-        let signer = null;
+$("netName").textContent = NETWORK.name;
 
-        const connectBtn = document.getElementById('connect-btn');
-        const walletStatus = document.getElementById('wallet-status');
+function show(t) {
+  $("result").textContent = t;
+  $("result").classList.remove("hidden");
+}
 
-        connectBtn.addEventListener('click', async () => {
-            if (window.ethereum) {
-                try {
-                    provider = new ethers.providers.Web3Provider(window.ethereum);
-                    await provider.send("eth_requestAccounts", []);
-                    signer = provider.getSigner();
-                    const address = await signer.getAddress();
-                    connectBtn.textContent = address.substring(0, 6) + '...' + address.substring(38);
-                    walletStatus.textContent = 'Connected: ' + address.substring(0, 6) + '...';
-                } catch (err) {
-                    console.error(err);
-                    alert("Connection failed: " + err.message);
-                }
-            } else {
-                alert("No crypto wallet found!");
-            }
-        });
+const pageUrl = location.href.split("#")[0];
+$("openMM").href = "https://metamask.app.link/dapp/" + pageUrl.replace(/^https?:\/\//, "");
+$("openCB").href = "https://go.cb-w.com/dapp?cb_url=" + encodeURIComponent(pageUrl);
+$("openTW").href = "https://link.trustwallet.com/open_url?coin_id=60&url=" + encodeURIComponent(pageUrl);
 
-        document.getElementById('deploy-btn').addEventListener('click', async () => {
-            if (!signer) {
-                alert("Connect wallet first!");
-                return;
-            }
-            const name = document.getElementById('token-name').value;
-            const symbol = document.getElementById('token-symbol').value;
-            const supply = document.getElementById('token-supply').value;
+$("connectBtn").onclick = () => { if (!signer) $("modal").classList.remove("hidden"); };
+$("closeModal").onclick = () => $("modal").classList.add("hidden");
 
-            if (!name || !symbol || !supply) {
-                alert("Fill in all fields!");
-                return;
-            }
+(async () => {
+  try {
+    const rpc = new ethers.providers.JsonRpcProvider(NETWORK.rpc);
+    const f = await new ethers.Contract(FACTORY_ADDRESS, ABI, rpc).fee();
+    $("fee").textContent = ethers.utils.formatEther(f);
+  } catch (e) { $("fee").textContent = "?"; console.error(e); }
+})();
 
-            try {
-                const factoryContract = new ethers.Contract(contractAddress, contractABI, signer);
-                
-                // Вызов метода контракта — откроется окно подтверждения транзакции в кошельке
-                const tx = await factoryContract.deployToken(name, symbol, ethers.utils.parseUnits(supply, 0));
-                
-                alert("Транзакция отправлена! Хэш: " + tx.hash);
-                const receipt = await tx.wait();
-                alert("Токен успешно создан! Блок: " + receipt.blockNumber);
-            } catch (err) {
-                console.error(err);
-                alert("Ошибка транзакции: " + (err.data?.message || err.message));
-            }
-        });
-    </script>
+async function ensureNetwork() {
+  const net = await provider.getNetwork();
+  if (net.chainId === NETWORK.chainId) return;
+  try {
+    await provider.send("wallet_switchEthereumChain", [{ chainId: NETWORK.hex }]);
+  } catch (e) {
+    await provider.send("wallet_addEthereumChain", [{
+      chainId: NETWORK.hex,
+      chainName: NETWORK.name,
+      nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+      rpcUrls: [NETWORK.rpc],
+      blockExplorerUrls: [NETWORK.explorer]
+    }]);
+  }
+}
+
+$("browserWallet").onclick = async () => {
+  if (!window.ethereum) {
+    alert("No browser wallet found. Use one of the 'Open in ...' buttons.");
+    return;
+  }
+  try {
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    await ensureNetwork();
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    const a = await signer.getAddress();
+    $("connectBtn").textContent = a.slice(0, 6) + "..." + a.slice(-4);
+    $("modal").classList.add("hidden");
+  } catch (e) {
+    console.error(e);
+    show("Could not connect: " + (e.message || e));
+    $("modal").classList.add("hidden");
+  }
+};
+
+$("form").onsubmit = async (e) => {
+  e.preventDefault();
+  if (!signer) { $("modal").classList.remove("hidden"); return; }
+  try {
+    const name = $("name").value.trim();
+    const symbol = $("symbol").value.trim();
+    const supply = $("supply").value;
+    if (!/^[0-9]+$/.test(supply)) { show("Supply must be a whole number."); return; }
+
+    const c = new ethers.Contract(FACTORY_ADDRESS, ABI, signer);
+    const fee = await c.fee();
+    const tx = await c.createToken(name, symbol, supply, { value: fee });
+    show("Transaction sent. Waiting for confirmation...");
+    const r = await tx.wait();
+    const ev = r.events.find(x => x.event === "TokenCreated");
+    const addr = ev.args.token;
+    $("result").innerHTML = "";
+    $("result").append("Success! Token address: " + addr + " ");
+    const link = document.createElement("a");
+    link.href = NETWORK.explorer + "/token/" + addr;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.className = "text-blue-400 underline";
+    link.textContent = "View on explorer";
+    $("result").append(link);
+    $("result").classList.remove("hidden");
+  } catch (err) {
+    console.error(err);
+    show("Error: " + (err.reason || err.message));
+  }
+};
+
+if (TAWK_URL) {
+  const s = document.createElement("script");
+  s.async = true;
+  s.src = TAWK_URL;
+  s.charset = "UTF-8";
+  s.setAttribute("crossorigin", "*");
+  document.head.appendChild(s);
+}
+</script>
 </body>
 </html>
