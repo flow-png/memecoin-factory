@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BaseMeme Launchpad</title>
-    <!-- Tailwind CSS for styling -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Ethers.js v5.7.2 -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-    <!-- Reown AppKit Ethers UMD Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/@reown/appkit-ethers@latest/dist/umd/index.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
 
@@ -50,62 +48,68 @@
 
     <!-- Footer -->
     <footer class="py-4 text-center text-xs text-slate-500 border-t border-slate-900">
-        Base Sepolia Testnet
+        Base Sepolia Testnet (<span id="wallet-status">Not Connected</span>)
     </footer>
 
-    <!-- Script Initialization -->
+    <!-- Scripting -->
     <script>
-        const projectId = '444a1d8663dd680723135d875aac4173';
         const contractAddress = '0x7fcf3673f721c537AE7104a6FF622B3359Cf34C5';
+        const BASE_SEPOLIA_CHAIN_ID = '0x143bf'; // 84532
 
-        let modal = null;
+        let provider = null;
+        let signer = null;
 
-        window.addEventListener('DOMContentLoaded', () => {
-            try {
-                // Инициализация Reown AppKit
-                if (window.AppKitEthers) {
-                    modal = window.AppKitEthers.createAppKit({
-                        projectId: projectId,
-                        networks: [{
-                            chainId: 84532,
-                            name: 'Base Sepolia',
-                            currency: 'ETH',
-                            explorerUrl: 'https://sepolia.basescan.org',
-                            rpcUrl: 'https://sepolia.base.org'
-                        }],
-                        metadata: {
-                            name: 'BaseMeme Launchpad',
-                            description: 'Deploy meme tokens on Base',
-                            url: 'https://basememe.pro',
-                            icons: ['https://avatars.githubusercontent.com/u/37784886']
+        const connectBtn = document.getElementById('connect-btn');
+        const walletStatus = document.getElementById('wallet-status');
+
+        connectBtn.addEventListener('click', async () => {
+            if (window.ethereum) {
+                try {
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.send("eth_requestAccounts", []);
+                    
+                    const network = await provider.getNetwork();
+                    if (network.chainId !== 84532) {
+                        try {
+                            await window.ethereum.request({
+                                method: 'wallet_switchEthereumChain',
+                                params: [{ chainId: BASE_SEPOLIA_CHAIN_ID }],
+                            });
+                        } catch (switchError) {
+                            alert("Please switch your wallet network to Base Sepolia!");
+                            return;
                         }
-                    });
+                    }
+
+                    signer = provider.getSigner();
+                    const address = await signer.getAddress();
+                    
+                    connectBtn.textContent = address.substring(0, 6) + '...' + address.substring(38);
+                    walletStatus.textContent = 'Connected: ' + address.substring(0, 6) + '...';
+                } catch (err) {
+                    console.error(err);
+                    alert("Connection failed: " + err.message);
                 }
-            } catch (err) {
-                console.error("WalletConnect Init Error:", err);
+            } else {
+                alert("No crypto wallet found! Open this site inside MetaMask, Trust Wallet, or Coinbase Wallet browser.");
+            }
+        });
+
+        document.getElementById('deploy-btn').addEventListener('click', async () => {
+            if (!signer) {
+                alert("Connect wallet first!");
+                return;
+            }
+            const name = document.getElementById('token-name').value;
+            const symbol = document.getElementById('token-symbol').value;
+            const supply = document.getElementById('token-supply').value;
+
+            if (!name || !symbol || !supply) {
+                alert("Fill in all fields!");
+                return;
             }
 
-            const connectBtn = document.getElementById('connect-btn');
-            if (connectBtn) {
-                connectBtn.addEventListener('click', async () => {
-                    if (modal) {
-                        await modal.open();
-                    } else {
-                        alert("WalletConnect SDK failed to load.");
-                    }
-                });
-            }
-
-            const deployBtn = document.getElementById('deploy-btn');
-            if (deployBtn) {
-                deployBtn.addEventListener('click', () => {
-                    if (!modal || !modal.getIsConnected()) {
-                        alert("Connect wallet first!");
-                        return;
-                    }
-                    alert("Ready to deploy!");
-                });
-            }
+            alert("Ready to deploy token via contract: " + contractAddress);
         });
     </script>
 </body>
