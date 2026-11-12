@@ -21,8 +21,7 @@
     <input id="symbol" maxlength="12" placeholder="Ticker (e.g. DOGE)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3" required>
     <input id="supply" type="number" min="1" max="1000000000000" step="1" placeholder="Total Supply" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3" required>
     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-semibold">🚀 Create Token</button>
-    <div id="result
-    " class="text-sm break-all hidden"></div>
+    <div id="result" class="text-sm break-all hidden"></div>
   </form>
   <p class="text-xs text-slate-500 text-center mt-6">Meme coins are highly risky. The smart contract is unaudited. Use at your own risk. This is not financial advice.</p>
 </main>
@@ -51,7 +50,7 @@ const NETWORK = {
   rpc: "https://sepolia.base.org",
   explorer: "https://sepolia.basescan.org"
 };
-const TAWK_URL = ""; // вставь сюда ссылку из Tawk.to, например "https://embed.tawk.to/ЦИФРЫ/default"
+const TAWK_URL = "https://embed.tawk.to/6af5ab6ac23cfc3c412a12a6/1k77qb6hm";
 
 const ABI = [
   "function fee() view returns (uint256)",
@@ -69,17 +68,14 @@ function show(t) {
   $("result").classList.remove("hidden");
 }
 
-// Deep links
 const pageUrl = location.href.split("#")[0];
 $("openMM").href = "https://metamask.app.link/dapp/" + pageUrl.replace(/^https?:\/\//, "");
 $("openCB").href = "https://go.cb-w.com/dapp?cb_url=" + encodeURIComponent(pageUrl);
 $("openTW").href = "https://link.trustwallet.com/open_url?coin_id=60&url=" + encodeURIComponent(pageUrl);
 
-// Modal
 $("connectBtn").onclick = () => { if (!signer) $("modal").classList.remove("hidden"); };
 $("closeModal").onclick = () => $("modal").classList.add("hidden");
 
-// Fee without wallet
 (async () => {
   try {
     const rpc = new ethers.providers.JsonRpcProvider(NETWORK.rpc);
@@ -157,7 +153,6 @@ $("form").onsubmit = async (e) => {
   }
 };
 
-// Tawk.to support chat (loads only if TAWK_URL is filled)
 if (TAWK_URL) {
   const s = document.createElement("script");
   s.async = true;
