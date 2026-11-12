@@ -54,8 +54,6 @@
     <!-- Scripting -->
     <script>
         const contractAddress = '0x7fcf3673f721c537AE7104a6FF622B3359Cf34C5';
-        
-        // ABI функции деплоя токена в контракте
         const contractABI = [
             "function deployToken(string memory name, string memory symbol, uint256 supply) public payable"
         ];
@@ -99,9 +97,9 @@
             }
 
             try {
-                alert("Подготовка транзакции деплоя...");
                 const factoryContract = new ethers.Contract(contractAddress, contractABI, signer);
                 
+                // Вызов метода контракта — откроется окно подтверждения транзакции в кошельке
                 const tx = await factoryContract.deployToken(name, symbol, ethers.utils.parseUnits(supply, 0));
                 
                 alert("Транзакция отправлена! Хэш: " + tx.hash);
