@@ -54,7 +54,6 @@
     <!-- Scripting -->
     <script>
         const contractAddress = '0x7fcf3673f721c537AE7104a6FF622B3359Cf34C5';
-        const BASE_SEPOLIA_CHAIN_ID = '0x143bf'; // 84532
 
         let provider = null;
         let signer = null;
@@ -72,46 +71,4 @@
                     const address = await signer.getAddress();
                     
                     connectBtn.textContent = address.substring(0, 6) + '...' + address.substring(38);
-                    walletStatus.textContent = 'Connected: ' + address.substring(0, 6) + '...';
-                } catch (err) {
-                    console.error(err);
-                    alert("Connection failed: " + err.message);
-                }
-            } else {
-                alert("No crypto wallet found! Open this site inside MetaMask browser.");
-            }
-        });
-
-        document.getElementById('deploy-btn').addEventListener('click', async () => {
-            if (!signer) {
-                alert("Connect wallet first!");
-                return;
-            }
-
-            try {
-                const network = await provider.getNetwork();
-                if (network.chainId !== 84532) {
-                    await window.ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: BASE_SEPOLIA_CHAIN_ID }],
-                    });
-                }
-
-                const name = document.getElementById('token-name').value;
-                const symbol = document.getElementById('token-symbol').value;
-                const supply = document.getElementById('token-supply').value;
-
-                if (!name || !symbol || !supply) {
-                    alert("Fill in all fields!");
-                    return;
-                }
-
-                alert("Connected to Base Sepolia! Ready to deploy token via contract: " + contractAddress);
-            } catch (err) {
-                console.error(err);
-                alert("Please switch network to Base Sepolia in your wallet.");
-            }
-        });
-    </script>
-</body>
-</html>
+                    walletStatus.textContent
