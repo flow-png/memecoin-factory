@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BaseMeme Launchpad</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Ethers.js v5.7.2 -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
 
+    <!-- Header -->
     <header class="p-4 flex justify-between items-center border-b border-slate-800">
         <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
             BaseMeme Launchpad
@@ -18,6 +21,7 @@
         </button>
     </header>
 
+    <!-- Main Content -->
     <main class="flex-1 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md shadow-xl">
             <h2 class="text-lg font-semibold mb-4 text-center">Deploy Your Meme Token</h2>
@@ -42,12 +46,20 @@
         </div>
     </main>
 
+    <!-- Footer -->
     <footer class="py-4 text-center text-xs text-slate-500 border-t border-slate-900">
         Base Sepolia Testnet (<span id="wallet-status">Not Connected</span>)
     </footer>
 
+    <!-- Scripting -->
     <script>
         const contractAddress = '0x7fcf3673f721c537AE7104a6FF622B3359Cf34C5';
+        
+        // ABI функции деплоя токена в контракте
+        const contractABI = [
+            "function deployToken(string memory name, string memory symbol, uint256 supply) public payable"
+        ];
+
         let provider = null;
         let signer = null;
 
@@ -85,7 +97,20 @@
                 alert("Fill in all fields!");
                 return;
             }
-            alert("Кошелек подключен! Контракт: " + contractAddress);
+
+            try {
+                alert("Подготовка транзакции деплоя...");
+                const factoryContract = new ethers.Contract(contractAddress, contractABI, signer);
+                
+                const tx = await factoryContract.deployToken(name, symbol, ethers.utils.parseUnits(supply, 0));
+                
+                alert("Транзакция отправлена! Хэш: " + tx.hash);
+                const receipt = await tx.wait();
+                alert("Токен успешно создан! Блок: " + receipt.blockNumber);
+            } catch (err) {
+                console.error(err);
+                alert("Ошибка транзакции: " + (err.data?.message || err.message));
+            }
         });
     </script>
 </body>
