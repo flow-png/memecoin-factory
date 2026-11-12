@@ -1,78 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaseMeme - Launch Your Meme Coin in 1 Minute</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BaseMeme - Launch Your Meme Coin in 1 Minute</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
 </head>
-<body class="bg-slate-950 text-white min-h-screen flex flex-col justify-between selection:bg-purple-500 selection:text-white">
-    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50 px-4 py-3 flex justify-between items-center max-w-4xl mx-auto w-full">
-        <div class="flex items-center space-x-2">
-            <span class="text-2xl">⚡</span>
-            <span class="font-bold text-lg bg-gradient-to-r from-blue-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">BaseMeme</span>
-        </div>
-        <button id="connectBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium px-4 py-2 rounded-xl text-sm transition shadow-lg shadow-purple-500/20">
-            Connect Wallet
-        </button>
-    </header>
+<body class="bg-slate-950 text-white min-h-screen">
+<header class="border-b border-slate-800 p-4 flex justify-between items-center max-w-xl mx-auto">
+  <span class="font-bold text-lg">⚡ BaseMeme</span>
+  <button id="connectBtn" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg">Connect Wallet</button>
+</header>
+<main class="max-w-xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-center mb-2">Launch Your Meme Coin in 1 Minute</h1>
+  <p class="text-center text-slate-400 mb-8">Deploy your own ERC-20 token on Base. Low fees, no coding.</p>
+  <form id="form" class="space-y-4 bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <div class="text-sm text-slate-400">Fee: <span id="fee">connect wallet</span> ETH</div>
+    <input id="name" placeholder="Token Name" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3" required>
+    <input id="symbol" placeholder="Ticker (e.g. DOGE)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3" required>
+    <input id="supply" type="number" min="1" max="1000000000000" placeholder="Total Supply" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3" required>
+    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-semibold">🚀 Create Token</button>
+    <div id="result" class="text-sm break-all hidden"></div>
+  </form>
+  <p class="text-xs text-slate-500 text-center mt-6">Meme coins are highly risky. This is not financial advice.</p>
+</main>
+<footer class="text-center text-xs text-slate-600 p-4">© 2026 BaseMeme. Base Sepolia Testnet.</footer>
 
-    <main class="max-w-xl mx-auto px-4 py-8 w-full flex-grow">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">
-                Launch Your <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">Meme Coin</span> in 1 Minute
-            </h1>
-            <p class="text-slate-400 text-sm">
-                Deploy your own ERC-20 token on Base network with zero code. Safe, instant, and ultra-low fees.
-            </p>
-        </div>
+<script>
+const FACTORY_ADDRESS = "0xf27c526A3e7389feb293A57ebf0987d453435647";
+const CHAIN_ID = 84532;
+const CHAIN_HEX = "0x14a34";
+const ABI = [
+  "function fee() view returns (uint256)",
+  "function createToken(string name, string symbol, uint256 supply) payable returns (address)",
+  "event TokenCreated(address indexed creator, address token, string name, string symbol, uint256 supply)"
+];
+let provider, signer;
+const $ = id => document.getElementById(id);
+function show(t) { $("result").textContent = t; $("result").classList.remove("hidden"); }
 
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl backdrop-blur">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-xs font-semibold uppercase tracking-wider text-purple-400 flex items-center gap-1">✨ Token Parameters</span>
-                <span id="feeBadge" class="text-xs bg-slate-800 border border-slate-700 text-slate-300 px-2.5 py-1 rounded-lg">Fee: 0.00 ETH</span>
-            </div>
+$("connectBtn").onclick = async () => {
+  if (!window.ethereum) { alert("Please open this site in MetaMask."); return; }
+  provider = new ethers.providers.Web3Provider(window.ethereum);
+  await provider.send("eth_requestAccounts", []);
+  if ((await provider.getNetwork()).chainId !== CHAIN_ID) {
+    try {
+      await provider.send("wallet_switchEthereumChain", [{ chainId: CHAIN_HEX }]);
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+    } catch (e) { show("Please switch to Base Sepolia."); return; }
+  }
+  signer = provider.getSigner();
+  const a = await signer.getAddress();
+  $("connectBtn").textContent = a.slice(0, 6) + "..." + a.slice(-4);
+  try {
+    const f = await new ethers.Contract(FACTORY_ADDRESS, ABI, provider).fee();
+    $("fee").textContent = ethers.utils.formatEther(f);
+  } catch (e) { console.error(e); }
+};
 
-            <form id="tokenForm" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 uppercase mb-1.5">Token Name</label>
-                    <input type="text" id="tokenName" required placeholder="e.g. Super Meme" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 uppercase mb-1.5">Ticker (Symbol)</label>
-                    <input type="text" id="tokenSymbol" required placeholder="e.g. MEME" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 uppercase mb-1.5">Total Supply</label>
-                    <input type="number" id="tokenSupply" required placeholder="e.g. 1000000000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 transition">
-                </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold py-3 rounded-xl text-sm transition shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2">
-                    <span>🚀</span> Create Token
-                </button>
-            </form>
-        </div>
-    </main>
-
-    <footer class="text-center py-6 text-xs text-slate-600 border-t border-slate-900">
-        © 2026 BaseMeme. Powered by Base Network.
-    </footer>
-
-    <script>
-        const connectBtn = document.getElementById('connectBtn');
-        let isConnected = false;
-        connectBtn.addEventListener('click', () => {
-            isConnected = !isConnected;
-            connectBtn.textContent = isConnected ? '0x71...3A9f' : 'Connect Wallet';
-            connectBtn.classList.toggle('bg-emerald-600', isConnected);
-        });
-        document.getElementById('tokenForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (!isConnected) {
-                alert('Please connect your wallet first!');
-                return;
-            }
-            alert('Success! Token deployment simulation initiated on Base network.');
-        });
-    </script>
+$("form").onsubmit = async (e) => {
+  e.preventDefault();
+  if (!signer) { alert("Connect wallet first!"); return; }
+  try {
+    const c = new ethers.Contract(FACTORY_ADDRESS, ABI, signer);
+    const fee = await c.fee();
+    const tx = await c.createToken($("name").value.trim(), $("symbol").value.trim(), $("supply").value, { value: fee });
+    show("Transaction sent. Waiting for confirmation...");
+    const r = await tx.wait();
+    const ev = r.events.find(x => x.event === "TokenCreated");
+    show("Success! Token address: " + ev.args.token);
+  } catch (err) {
+    console.error(err);
+    show("Error: " + (err.reason || err.message));
+  }
+};
+</script>
 </body>
 </html>
